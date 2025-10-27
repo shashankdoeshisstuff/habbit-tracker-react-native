@@ -1,10 +1,10 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack, useRouter } from 'expo-router';
+import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { AuthProvider } from '@/lib/auth-context';
+import { AuthProvider, useAuth } from '@/lib/auth-context';
 import { useEffect } from 'react';
 
 export const unstable_settings = {
@@ -13,16 +13,18 @@ export const unstable_settings = {
 
 function RouteGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const isAuth = false;
-
+  const { user, isLoadingUser } = useAuth();
+  const segments = useSegments();
+  
   useEffect(() => {
-    if (!isAuth) {
-      const timeout = setTimeout(() => {
-        router.replace("/auth");
-      }, 0); // wait one tick for navigation context to be ready
-      return () => clearTimeout(timeout);
+    const inAuthGroup = segments[0] === 'auth'
+
+    if (!user && !inAuthGroup && !isLoadingUser) {
+      router.replace("/auth");
+    } else if (user && inAuthGroup && !isLoadingUser) {
+      router.replace('/')
     }
-  }, [isAuth]);
+  }, [user, segments]);
 
   return <>{children}</>
 }

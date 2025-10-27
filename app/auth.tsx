@@ -13,7 +13,7 @@ export default function AuthScreen() {
   const theme = useTheme();
   const router = useRouter();
 
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, signOut } = useAuth();
 
   const handleAuth = async () => {
     if (!email || !password) {
@@ -98,6 +98,10 @@ export default function AuthScreen() {
             ? "Already have an account? Sign In"
             : "Don't have an account? Sign up"
           }
+        </Button>
+
+        <Button mode="text" onPress={signOut} icon={"logout"}>
+          Sign Out
         </Button>
       </View>
     </KeyboardAvoidingView>
