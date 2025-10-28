@@ -6,6 +6,8 @@ import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { AuthProvider, useAuth } from '@/lib/auth-context';
 import { useEffect } from 'react';
+import { PaperProvider } from 'react-native-paper';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -20,7 +22,7 @@ function RouteGuard({ children }: { children: React.ReactNode }) {
     const inAuthGroup = segments[0] === 'auth'
 
     if (!user && !inAuthGroup && !isLoadingUser) {
-      router.replace("/auth");
+      setTimeout(() => router.replace('/auth'), 0);
     } else if (user && inAuthGroup && !isLoadingUser) {
       router.replace('/')
     }
@@ -35,13 +37,17 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <AuthProvider>
-        <RouteGuard>
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-          </Stack>
-          <StatusBar style="auto" />
-        </RouteGuard>
+        <PaperProvider>
+          <SafeAreaProvider>
+            <RouteGuard>
+              <Stack>
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+              </Stack>
+              <StatusBar style="auto" />
+            </RouteGuard>
+          </SafeAreaProvider>
+        </PaperProvider>
       </AuthProvider>
     </ThemeProvider>
   );
